@@ -3,9 +3,15 @@ var walls = {}
 
 walls.character = "#";
 
-function bind(object, method) {
+function forEach(elements, action) {
+    for(var i = 0; i < elements.length; i++) {
+	action(elements[i]);
+    }
+}
+
+function bind(f, o) {
     return function() {
-	object[method].call(object, arguments);
+	    f.apply(o, arguments);
     }
 }
 
@@ -177,11 +183,13 @@ World.prototype.toString = function() {
 World.prototype.listActiveEntities = function() {
     var result = [];
 
-    this.grid.each(function (point, value) {
-	if(value != undefined && value.action) {
-	    result.push({object: value, point: point});
+    this.grid.each(function (point, entity) {
+	if(entity != undefined && entity.action) {
+	    result.push({object: entity, point: point});
 	}
     });
+
+    console.log(result);
 
     return result;
 }
@@ -203,6 +211,28 @@ World.prototype.lookAround = function(current_position) {
     return result;
 }
 
+World.prototype.activateAction = function(entity) {
+    var look_around = world.lookAround(entity.point);
+    var action = entity.object.action(look_around);
+    
+    if(action.type == "move" && directions.contains(action.direction)) {
+	var where = entity.point.add(directions.lookup(action.direction));
+	
+	if(this.grid.hasInside(where) && this.grid.valueAt(where) == undefined) {
+	    this.grid.moveValue(entity.point, where);
+	}
+    } else {
+	throw new Error("[!] Unknown action: " + action.type);
+    }
+}
+
+World.prototype.step = function() {
+    console.log(this.listActiveEntities());
+    forEach(this.listActiveEntities, bind(this.activateAction, this));
+}
+
 var mundo = new World(cave);
-console.log(mundo.lookAround(new Point(0, 0)));
+console.log(mundo.toString());
+mundo.step();
+console.log(mundo.toString());
 
