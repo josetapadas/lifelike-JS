@@ -28,7 +28,6 @@ Dictionary.prototype.each = function(action) {
     forEachIn(this.values, action);
 } 
 
-
 // -------- the Point object
 function Point(x, y) {
     this.x = x;
@@ -47,3 +46,40 @@ Point.prototype.toString = function() {
     return "{ x: " + this.x + ", y: " + this.y + " }";
 }
 
+// -------- the Grid object
+function Grid(width, height) {
+    this.width = width;
+    this.height = height;
+    this.cells = new Array(width*height);
+}
+
+Grid.prototype.valueAt = function(position) {
+    return this.cells[position.y*this.height + position.x];
+}
+
+Grid.prototype.setValueAt = function(position, value) {
+    this.cells[position.y*this.height + position.x] = value;
+}
+
+Grid.prototype.isInside = function(position) {
+    return(
+	position.x >= 0 &&
+	position.y >= 0 &&
+	position.x < this.width &&
+	position.y < this.height
+    );
+} 
+
+Grid.prototype.moveValue = function(from, to) {
+    this.setValueAt(to, this.valueAt(from));
+    this.setValueAt(from, undefined);
+}
+
+Grid.prototype.each = function(action) {
+    for(var i=0; i < this.width; i++) {
+	for(var j=0; j < this.height; j++) {
+	    var point = new Point(i, j);
+	    action(point, this.valueAt(point));
+	}
+    }
+}
