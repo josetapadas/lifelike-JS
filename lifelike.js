@@ -3,6 +3,12 @@ var walls = {}
 
 walls.character = "#";
 
+function bind(object, method) {
+    return function() {
+	object[method].call(object, arguments);
+    }
+}
+
 function forEachIn(object, action) {
     for(var property in object) {
 	if(Object.prototype.hasOwnProperty.call(object, property))
@@ -54,8 +60,8 @@ function Point(x, y) {
     this.y = y;
 }
 
-Point.prototype.add = function(o_x, o_y) {
-    return new Point(this.x + o_x, this.y + o_y);
+Point.prototype.add = function(other) {
+    return new Point(this.x + other.x, this.y + other.y);
 }
 
 Point.prototype.isEqual = function(point) {
@@ -81,12 +87,10 @@ Grid.prototype.setValueAt = function(position, value) {
     this.cells[position.y*this.width + position.x] = value;
 }
 
-Grid.prototype.isInside = function(position) {
+Grid.prototype.hasInside = function(position) {
     return(
-	position.x >= 0 &&
-	position.y >= 0 &&
-	position.x < this.width &&
-	position.y < this.height
+	position.x >= 0 && position.y >= 0 &&
+	position.x < this.width && position.y < this.height
     );
 } 
 
@@ -170,6 +174,35 @@ World.prototype.toString = function() {
     return chars.join("");
 }
 
+World.prototype.listActiveEntities = function() {
+    var result = [];
+
+    this.grid.each(function (point, value) {
+	if(value != undefined && value.action) {
+	    result.push({object: value, point: point});
+	}
+    });
+
+    return result;
+}
+
+World.prototype.lookAround = function(current_position) {
+    var result = {};
+    var grid = this.grid;
+
+    directions.each(function(key, value) {
+	var endpoint = current_position.add(value);
+	
+	if(grid.hasInside(endpoint)) {
+	    result[key] = charFromElement(grid.valueAt(endpoint));
+	} else {
+	    result[key] = "#";
+	}
+    });
+
+    return result;
+}
+
 var mundo = new World(cave);
-console.log(mundo.toString());
+console.log(mundo.lookAround(new Point(0, 0)));
 
