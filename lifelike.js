@@ -101,6 +101,7 @@ Grid.prototype.hasInside = function(position) {
 } 
 
 Grid.prototype.moveValue = function(from, to) {
+    console.log("Setting value from: " + from + " to " + to);
     this.setValueAt(to, this.valueAt(from));
     this.setValueAt(from, undefined);
 }
@@ -131,12 +132,12 @@ var cave =
    "############################"];
 
 var directions = new Dictionary({
-    "n" : new Point(0, 1),
-    "ne": new Point(1, 1),
-    "nw": new Point(-1, 1),
-    "s": new Point(0, -1),
-    "se": new Point(1, -1),
-    "sw": new Point(-1, -1),
+    "n" : new Point(0, -1),
+    "ne": new Point(1, -1),
+    "nw": new Point(-1, -1),
+    "s": new Point(0, 1),
+    "se": new Point(1, 1),
+    "sw": new Point(-1, 1),
     "e": new Point(1, 0),
     "w": new Point(-1, 0)
 });
@@ -189,8 +190,6 @@ World.prototype.listActiveEntities = function() {
 	}
     });
 
-    console.log(result);
-
     return result;
 }
 
@@ -212,23 +211,26 @@ World.prototype.lookAround = function(current_position) {
 }
 
 World.prototype.activateAction = function(entity) {
-    var look_around = world.lookAround(entity.point);
+    var look_around = this.lookAround(entity.point);
     var action = entity.object.action(look_around);
-    
+
+    console.log(action);
+
     if(action.type == "move" && directions.contains(action.direction)) {
 	var where = entity.point.add(directions.lookup(action.direction));
-	
-	if(this.grid.hasInside(where) && this.grid.valueAt(where) == undefined) {
-	    this.grid.moveValue(entity.point, where);
-	}
+        	   
+    	if(this.grid.hasInside(where) && this.grid.valueAt(where) == undefined) {   
+            
+            this.grid.moveValue(entity.point, where);
+    	}
     } else {
-	throw new Error("[!] Unknown action: " + action.type);
+	   throw new Error("[!] Unknown action: " + action.type);
     }
 }
 
 World.prototype.step = function() {
     console.log(this.listActiveEntities());
-    forEach(this.listActiveEntities, bind(this.activateAction, this));
+    forEach(this.listActiveEntities, this.activateAction);
 }
 
 World.prototype.print = function() {
@@ -236,6 +238,8 @@ World.prototype.print = function() {
 }
 
 var mundo = new World(cave);
-mundo.listActiveEntities();
-mundo.print();
+var jovem = new Alentejano();
 
+var entidade_jovem = {object: jovem, point: new Point(1,1)}
+mundo.activateAction(entidade_jovem)
+mundo.print()
