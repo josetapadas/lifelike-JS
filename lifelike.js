@@ -231,8 +231,11 @@ World.prototype.step = function() {
     forEach(this.listActiveEntities, bind(this.activateAction, this));
 }
 
+World.prototype.print = function() {
+    console.log(this.toString());
+}
+
 var mundo = new World(cave);
-console.log(mundo.toString());
-mundo.step();
-console.log(mundo.toString());
+mundo.listActiveEntities();
+mundo.print();
 
