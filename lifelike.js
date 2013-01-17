@@ -101,7 +101,6 @@ Grid.prototype.hasInside = function(position) {
 } 
 
 Grid.prototype.moveValue = function(from, to) {
-    console.log("Setting value from: " + from + " to " + to);
     this.setValueAt(to, this.valueAt(from));
     this.setValueAt(from, undefined);
 }
@@ -214,8 +213,6 @@ World.prototype.activateAction = function(entity) {
     var look_around = this.lookAround(entity.point);
     var action = entity.object.action(look_around);
 
-    console.log(action);
-
     if(action.type == "move" && directions.contains(action.direction)) {
 	var where = entity.point.add(directions.lookup(action.direction));
         	   
@@ -229,8 +226,7 @@ World.prototype.activateAction = function(entity) {
 }
 
 World.prototype.step = function() {
-    console.log(this.listActiveEntities());
-    forEach(this.listActiveEntities, this.activateAction);
+    forEach(this.listActiveEntities(), bind(this.activateAction, this));
 }
 
 World.prototype.print = function() {
@@ -240,6 +236,6 @@ World.prototype.print = function() {
 var mundo = new World(cave);
 var jovem = new Alentejano();
 
-var entidade_jovem = {object: jovem, point: new Point(1,1)}
-mundo.activateAction(entidade_jovem)
-mundo.print()
+mundo.print();
+mundo.step();
+mundo.print();
