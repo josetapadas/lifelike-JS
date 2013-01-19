@@ -120,14 +120,14 @@ var cave =
   ["############################",
    "#                  o       #",
    "#                          #",
-   "#          #####           #",
-   "#          #   #           #",
-   "#          #####           #",
    "#                          #",
-   "#    #                     #",
-   "#    #       o             #",
-   "# o  #         o      ######",
-   "#    #                     #",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "#            o             #",
+   "# o            o           #",
+   "#                          #",
    "############################"];
 
 var directions = new Dictionary({
@@ -227,15 +227,26 @@ World.prototype.activateAction = function(entity) {
 
 World.prototype.step = function() {
     forEach(this.listActiveEntities(), bind(this.activateAction, this));
+    this.print();
 }
 
 World.prototype.print = function() {
     console.log(this.toString());
 }
 
-var mundo = new World(cave);
-var jovem = new Alentejano();
+World.prototype.start = function () {
+    if(!this.running) {
+        this.running = setInterval(bind(this.step, this), 2000);
+    }
+}
 
+World.prototype.stop = function() {
+    if(this.running) {
+        clearInterval(this.running);
+        this.running = null;
+    }
+}
+
+var mundo = new World(cave);
 mundo.print();
-mundo.step();
-mundo.print();
+mundo.start();
