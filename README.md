@@ -1,7 +1,8 @@
-lifelike-JS
-===========
+# lifelike-JS
 
-"The game of Life" clone(ish) in JavaScript.
+"The game of Life" clone in JavaScript.
+
+This was developed for education purposes only regarding OOP in JavaScript.
 
 ## About the 'Game of Life'
 
