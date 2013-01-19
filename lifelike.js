@@ -1,11 +1,13 @@
-// -------- general functions
-var walls = {}
+// the game of life javascript implementation
+// by josé tapadas alves (github.com/josetapadas)
 
-walls.character = "#";
+var parede = {}
+
+parede.character = "#";
 
 function forEach(elements, action) {
     for(var i = 0; i < elements.length; i++) {
-	action(elements[i]);
+	   action(elements[i]);
     }
 }
 
@@ -24,7 +26,7 @@ function forEachIn(object, action) {
 
 function elementFromChar(c) {
     if(c == "#")
-	   return walls;
+	   return parede;
     else if(c == "o")
 	   return new Cell(c, "alive");
     else if(c == ' ')
@@ -38,7 +40,6 @@ function charFromElement(element) {
 	return element.character;
 }
 
-// -------- the Dictionary object
 function Dictionary(values) {
     this.values = values || {};
 }
@@ -60,7 +61,6 @@ Dictionary.prototype.each = function(action) {
     forEachIn(this.values, action);
 } 
 
-// -------- the Point object
 function Point(x, y) {
     this.x = x;
     this.y = y;
@@ -78,7 +78,6 @@ Point.prototype.toString = function() {
     return "{ x: " + this.x + ", y: " + this.y + " }";
 }
 
-// -------- the Grid object
 function Grid(width, height) {
     this.width = width;
     this.height = height;
@@ -114,23 +113,6 @@ Grid.prototype.each = function(action) {
     }
 }
 
-// -------- the Scenario data
-
-var cave =
-  ["############################",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "#        ooooooooo         #",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "############################"];
-
 var directions = new Dictionary({
     "n" : new Point(0, -1),
     "ne": new Point(1, -1),
@@ -142,13 +124,10 @@ var directions = new Dictionary({
     "w": new Point(-1, 0)
 });
 
-// -------- Live creature
 function Cell(char, state) {
     this.character = char;
     this.state = state;
 };
-
-// -------- the World object
 
 function World(map) {
     var grid = new Grid(map[0].length, map.length);
@@ -249,5 +228,20 @@ World.prototype.stop = function() {
     }
 }
 
-var mundo = new World(cave);
+var genesis =
+  ["############################",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "#        ooooooooo         #",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "############################"];
+
+var mundo = new World(genesis);
 mundo.start();
