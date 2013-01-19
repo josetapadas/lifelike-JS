@@ -23,12 +23,12 @@ function forEachIn(object, action) {
 }
 
 function elementFromChar(c) {
-    if(c == " ")
-	return undefined;
-    else if(c == "#")
-	return walls;
-    else if(c == "o" || c == 'x')
-	return new AliveBeing();
+    if(c == "#")
+	   return walls;
+    else if(c == "o")
+	   return new Cell(c, "alive");
+    else if(c == ' ')
+        return new Cell(c, "dead");
 }
 
 function charFromElement(element) {
@@ -118,15 +118,16 @@ Grid.prototype.each = function(action) {
 
 var cave =
   ["############################",
-   "#   oo oooo        oo      #",
    "#                          #",
-   "#      o   oo          o   #",
-   "#        o  oo             #",
-   "#             o            #",
-   "#   oo          o        o #",
-   "#    o              o      #",
-   "#            ooo       o   #",
-   "# ooo         ooo          #",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "#            o             #",
+   "#            o             #",
+   "#            o             #",
+   "#                          #",
+   "#                          #",
+   "#                          #",
    "#                          #",
    "############################"];
 
@@ -142,13 +143,10 @@ var directions = new Dictionary({
 });
 
 // -------- Live creature
-function AliveBeing() {};
-
-AliveBeing.prototype.action = function() {
-    return {type: "alive"};
-}
-
-AliveBeing.prototype.character = "o";
+function Cell(char, state) {
+    this.character = char;
+    this.state = state;
+};
 
 // -------- the World object
 
@@ -156,11 +154,11 @@ function World(map) {
     var grid = new Grid(map[0].length, map.length);
 
     for(var i=0; i < map.length; i++) {
-	var line = map[i];
+    	var line = map[i];
 
-	for(var j=0; j < line.length; j++) {
-	    grid.setValueAt(new Point(j, i), elementFromChar(line.charAt(j)));
-	}
+    	for(var j=0; j < line.length; j++) {
+    	    grid.setValueAt(new Point(j, i), elementFromChar(line.charAt(j)));
+    	}
     }
 
     this.grid = grid;
@@ -184,9 +182,9 @@ World.prototype.listActiveEntities = function() {
     var result = [];
 
     this.grid.each(function (point, entity) {
-	if(entity != undefined) {
-	    result.push({object: entity, point: point});
-	}
+    	if(entity != undefined && entity.state) {    	    
+            result.push({object: entity, point: point});
+    	}
     });
 
     return result;
@@ -208,25 +206,29 @@ World.prototype.lookAround = function(current_position) {
     return neighbours;
 }
 
-World.prototype.activateAction = function(entity) {
-    var look_around = this.lookAround(entity.point);
-
-    // Any live cell with fewer than two live neighbours dies, as if caused by under-population.
-    if(look_around < 2 && entity.object.character == 'o') {
-        entity.object.character = ".";
-
-    // Any live cell with more than three live neighbours dies, as if by overcrowding.        
-    } else if( look_around > 3 && (entity.object.character == 'o' )) {
-        entity.object.character = ".";
-    
-    // Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-    } else if( look_around == 3 && entity.object.character == '.') {
+World.prototype.activateStates = function(entity) {
+    if(entity.object.state == "alive") {
         entity.object.character = "o";
+    } else if(entity.object.state == "dead") {
+        entity.object.character = " ";
+    }
+}
+
+World.prototype.updateStates = function(entity) {
+    var neighbours = this.lookAround(entity.point);
+
+    if(neighbours == 3) {
+        entity.object.state = "alive";
+    } else if( (neighbours == 2 || neighbours == 3) && entity.object.state == "alive") {
+        entity.object.state = "alive";
+    } else {
+        entity.object.state = "dead";
     }
 }
 
 World.prototype.step = function() {
-    forEach(this.listActiveEntities(), bind(this.activateAction, this));
+    forEach(this.listActiveEntities(), bind(this.activateStates, this));
+    forEach(this.listActiveEntities(), bind(this.updateStates, this));
     this.print();
 }
 
@@ -248,5 +250,5 @@ World.prototype.stop = function() {
 }
 
 var mundo = new World(cave);
-mundo.print();
+mundo.step();
 mundo.start();
