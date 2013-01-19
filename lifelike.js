@@ -122,9 +122,9 @@ var cave =
    "#                          #",
    "#                          #",
    "#                          #",
-   "#            o             #",
-   "#            o             #",
-   "#            o             #",
+   "#                          #",
+   "#        ooooooooo         #",
+   "#                          #",
    "#                          #",
    "#                          #",
    "#                          #",
@@ -238,7 +238,7 @@ World.prototype.print = function() {
 
 World.prototype.start = function () {
     if(!this.running) {
-        this.running = setInterval(bind(this.step, this), 2000);
+        this.running = setInterval(bind(this.step, this), 1000);
     }
 }
 
@@ -250,5 +250,4 @@ World.prototype.stop = function() {
 }
 
 var mundo = new World(cave);
-mundo.step();
 mundo.start();
