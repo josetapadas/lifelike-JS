@@ -19,8 +19,8 @@ function bind(f, o) {
 
 function forEachIn(object, action) {
     for(var property in object) {
-	if(Object.prototype.hasOwnProperty.call(object, property))
-	    action(property, object[property]);
+    	if(Object.prototype.hasOwnProperty.call(object, property))
+    	    action(property, object[property]);
     }
 }
 
@@ -35,9 +35,9 @@ function elementFromChar(c) {
 
 function charFromElement(element) {
     if(element == undefined)
-	return " ";
+	   return " ";
     else
-	return element.character;
+	   return element.character;
 }
 
 function Dictionary(values) {
@@ -98,11 +98,6 @@ Grid.prototype.hasInside = function(position) {
 	position.x < this.width && position.y < this.height
     );
 } 
-
-Grid.prototype.moveValue = function(from, to) {
-    this.setValueAt(to, this.valueAt(from));
-    this.setValueAt(from, undefined);
-}
 
 Grid.prototype.each = function(action) {
     for(var i=0; i < this.height; i++) {
