@@ -27,8 +27,8 @@ function elementFromChar(c) {
 	return undefined;
     else if(c == "#")
 	return walls;
-    else if(c == "o")
-	return new Alentejano();
+    else if(c == "o" || c == 'x')
+	return new AliveBeing();
 }
 
 function charFromElement(element) {
@@ -118,15 +118,15 @@ Grid.prototype.each = function(action) {
 
 var cave =
   ["############################",
-   "#                  o       #",
+   "#   oo oooo        oo      #",
    "#                          #",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "#            o             #",
-   "# o            o           #",
+   "#      o   oo          o   #",
+   "#        o  oo             #",
+   "#             o            #",
+   "#   oo          o        o #",
+   "#    o              o      #",
+   "#            ooo       o   #",
+   "# ooo         ooo          #",
    "#                          #",
    "############################"];
 
@@ -141,14 +141,14 @@ var directions = new Dictionary({
     "w": new Point(-1, 0)
 });
 
-// -------- Alentejano: only walks south
-function Alentejano() {};
+// -------- Live creature
+function AliveBeing() {};
 
-Alentejano.prototype.action = function() {
-    return {type: "move", direction: "s"};
+AliveBeing.prototype.action = function() {
+    return {type: "alive"};
 }
 
-Alentejano.prototype.character = "o";
+AliveBeing.prototype.character = "o";
 
 // -------- the World object
 
@@ -184,7 +184,7 @@ World.prototype.listActiveEntities = function() {
     var result = [];
 
     this.grid.each(function (point, entity) {
-	if(entity != undefined && entity.action) {
+	if(entity != undefined) {
 	    result.push({object: entity, point: point});
 	}
     });
@@ -193,35 +193,35 @@ World.prototype.listActiveEntities = function() {
 }
 
 World.prototype.lookAround = function(current_position) {
-    var result = {};
+    var neighbours = 0;
     var grid = this.grid;
 
     directions.each(function(key, value) {
-	var endpoint = current_position.add(value);
-	
-	if(grid.hasInside(endpoint)) {
-	    result[key] = charFromElement(grid.valueAt(endpoint));
-	} else {
-	    result[key] = "#";
-	}
+    	var endpoint = current_position.add(value);
+    	if(grid.hasInside(endpoint)) {
+            if(charFromElement(grid.valueAt(endpoint)) == "o") {                
+                neighbours += 1;
+            }
+        }    	
     });
 
-    return result;
+    return neighbours;
 }
 
 World.prototype.activateAction = function(entity) {
     var look_around = this.lookAround(entity.point);
-    var action = entity.object.action(look_around);
 
-    if(action.type == "move" && directions.contains(action.direction)) {
-	var where = entity.point.add(directions.lookup(action.direction));
-        	   
-    	if(this.grid.hasInside(where) && this.grid.valueAt(where) == undefined) {   
-            
-            this.grid.moveValue(entity.point, where);
-    	}
-    } else {
-	   throw new Error("[!] Unknown action: " + action.type);
+    // Any live cell with fewer than two live neighbours dies, as if caused by under-population.
+    if(look_around < 2 && entity.object.character == 'o') {
+        entity.object.character = ".";
+
+    // Any live cell with more than three live neighbours dies, as if by overcrowding.        
+    } else if( look_around > 3 && (entity.object.character == 'o' )) {
+        entity.object.character = ".";
+    
+    // Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+    } else if( look_around == 3 && entity.object.character == '.') {
+        entity.object.character = "o";
     }
 }
 
