@@ -1,6 +1,39 @@
 // -------- general functions
 var walls = {}
 
+window.onload = function() {
+    var mundo = new World(cave);
+    mundo.start()
+}
+
+World.prototype.printHTML = function() {
+    var chars = [];
+    var EOL = this.grid.width - 1;
+
+    var holder = document.getElementById("world");
+
+    while (holder.hasChildNodes()) {
+        holder.removeChild(holder.lastChild);
+    }
+    
+    var table = document.createElement("table");
+    table.setAttribute("id", "world_table");
+
+    var cell, row;
+
+    for(var i=0; i < this.grid.width; i++) {
+        row = document.createElement("tr");
+        for(var j=0; j < this.grid.height; j++) {
+            cell = document.createElement("td");
+            cell.appendChild(document.createTextNode(this.grid.valueAt(new Point(i, j)).character));
+            row.appendChild(cell);
+        }
+        table.appendChild(row);
+    }
+
+    holder.appendChild(table);
+}
+
 walls.character = "#";
 
 function forEach(elements, action) {
@@ -229,7 +262,7 @@ World.prototype.updateStates = function(entity) {
 World.prototype.step = function() {
     forEach(this.listActiveEntities(), bind(this.activateStates, this));
     forEach(this.listActiveEntities(), bind(this.updateStates, this));
-    this.print();
+    this.printHTML();
 }
 
 World.prototype.print = function() {
@@ -248,7 +281,3 @@ World.prototype.stop = function() {
         this.running = null;
     }
 }
-
-var mundo = new World(cave);
-mundo.step();
-mundo.start();
