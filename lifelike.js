@@ -1,8 +1,40 @@
 // the game of life javascript implementation
 // by josé tapadas alves (github.com/josetapadas)
 
-var parede = {}
+window.onload = function() {
+    var mundo = new World(cave);
+    mundo.start();
+}
 
+World.prototype.printHTML = function() {
+    var chars = [];
+    var EOL = this.grid.width - 1;
+
+    var holder = document.getElementById("world");
+
+    while (holder.hasChildNodes()) {
+        holder.removeChild(holder.lastChild);
+    }
+    
+    var table = document.createElement("table");
+    table.setAttribute("id", "world_table");
+
+    var cell, row;
+
+    for(var i=0; i < this.grid.height; i++) {
+        row = document.createElement("tr");
+        for(var j=0; j < this.grid.width; j++) {
+	    cell = document.createElement("td");
+            cell.appendChild(document.createTextNode(this.grid.valueAt(new Point(j, i)).character));
+            row.appendChild(cell);
+        }
+        table.appendChild(row);
+    }
+
+    holder.appendChild(table);
+}
+
+parede = { }
 parede.character = "#";
 
 function forEach(elements, action) {
@@ -108,6 +140,23 @@ Grid.prototype.each = function(action) {
     }
 }
 
+// -------- the Scenario data
+
+var cave =
+  ["############################",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "#        ooooooooo         #",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "#                          #",
+   "############################"];
+
 var directions = new Dictionary({
     "n" : new Point(0, -1),
     "ne": new Point(1, -1),
@@ -203,7 +252,7 @@ World.prototype.updateStates = function(entity) {
 World.prototype.step = function() {
     forEach(this.listActiveEntities(), bind(this.activateStates, this));
     forEach(this.listActiveEntities(), bind(this.updateStates, this));
-    this.print();
+    this.printHTML();
 }
 
 World.prototype.print = function() {
@@ -222,21 +271,3 @@ World.prototype.stop = function() {
         this.running = null;
     }
 }
-
-var genesis =
-  ["############################",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "#        ooooooooo         #",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "#                          #",
-   "############################"];
-
-var mundo = new World(genesis);
-mundo.start();
