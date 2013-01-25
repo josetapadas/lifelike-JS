@@ -3,7 +3,7 @@ var walls = {}
 
 window.onload = function() {
     var mundo = new World(cave);
-    mundo.start()
+    mundo.start();
 }
 
 World.prototype.printHTML = function() {
@@ -21,11 +21,11 @@ World.prototype.printHTML = function() {
 
     var cell, row;
 
-    for(var i=0; i < this.grid.width; i++) {
+    for(var i=0; i < this.grid.height; i++) {
         row = document.createElement("tr");
-        for(var j=0; j < this.grid.height; j++) {
-            cell = document.createElement("td");
-            cell.appendChild(document.createTextNode(this.grid.valueAt(new Point(i, j)).character));
+        for(var j=0; j < this.grid.width; j++) {
+	    cell = document.createElement("td");
+            cell.appendChild(document.createTextNode(this.grid.valueAt(new Point(j, i)).character));
             row.appendChild(cell);
         }
         table.appendChild(row);
