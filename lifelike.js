@@ -1,10 +1,7 @@
-// -------- general functions
-var walls = {}
-
+// the game of life javascript implementation
+// by josé tapadas alves (github.com/josetapadas)
 window.onload = function() {
-    var mundo = new World(cave);
-    mundo.start();
-}
+
 
 World.prototype.printHTML = function() {
     var chars = [];
@@ -34,11 +31,12 @@ World.prototype.printHTML = function() {
     holder.appendChild(table);
 }
 
-walls.character = "#";
+parede = { }
+parede.character = "#";
 
 function forEach(elements, action) {
     for(var i = 0; i < elements.length; i++) {
-	action(elements[i]);
+	   action(elements[i]);
     }
 }
 
@@ -50,14 +48,14 @@ function bind(f, o) {
 
 function forEachIn(object, action) {
     for(var property in object) {
-	if(Object.prototype.hasOwnProperty.call(object, property))
-	    action(property, object[property]);
+    	if(Object.prototype.hasOwnProperty.call(object, property))
+    	    action(property, object[property]);
     }
 }
 
 function elementFromChar(c) {
     if(c == "#")
-	   return walls;
+	   return parede;
     else if(c == "o")
 	   return new Cell(c, "alive");
     else if(c == ' ')
@@ -66,12 +64,11 @@ function elementFromChar(c) {
 
 function charFromElement(element) {
     if(element == undefined)
-	return " ";
+	   return " ";
     else
-	return element.character;
+	   return element.character;
 }
 
-// -------- the Dictionary object
 function Dictionary(values) {
     this.values = values || {};
 }
@@ -93,7 +90,6 @@ Dictionary.prototype.each = function(action) {
     forEachIn(this.values, action);
 } 
 
-// -------- the Point object
 function Point(x, y) {
     this.x = x;
     this.y = y;
@@ -111,7 +107,6 @@ Point.prototype.toString = function() {
     return "{ x: " + this.x + ", y: " + this.y + " }";
 }
 
-// -------- the Grid object
 function Grid(width, height) {
     this.width = width;
     this.height = height;
@@ -132,11 +127,6 @@ Grid.prototype.hasInside = function(position) {
 	position.x < this.width && position.y < this.height
     );
 } 
-
-Grid.prototype.moveValue = function(from, to) {
-    this.setValueAt(to, this.valueAt(from));
-    this.setValueAt(from, undefined);
-}
 
 Grid.prototype.each = function(action) {
     for(var i=0; i < this.height; i++) {
@@ -175,13 +165,10 @@ var directions = new Dictionary({
     "w": new Point(-1, 0)
 });
 
-// -------- Live creature
 function Cell(char, state) {
     this.character = char;
     this.state = state;
 };
-
-// -------- the World object
 
 function World(map) {
     var grid = new Grid(map[0].length, map.length);
@@ -271,7 +258,7 @@ World.prototype.print = function() {
 
 World.prototype.start = function () {
     if(!this.running) {
-        this.running = setInterval(bind(this.step, this), 2000);
+        this.running = setInterval(bind(this.step, this), 1000);
     }
 }
 
@@ -280,4 +267,7 @@ World.prototype.stop = function() {
         clearInterval(this.running);
         this.running = null;
     }
+}
+    var mundo = new World(cave);
+    mundo.start();
 }
