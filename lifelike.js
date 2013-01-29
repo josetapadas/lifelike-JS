@@ -1,10 +1,7 @@
 // the game of life javascript implementation
 // by josé tapadas alves (github.com/josetapadas)
-
 window.onload = function() {
-    var mundo = new World(cave);
-    mundo.start();
-}
+
 
 World.prototype.printHTML = function() {
     var chars = [];
@@ -270,4 +267,7 @@ World.prototype.stop = function() {
         clearInterval(this.running);
         this.running = null;
     }
+}
+    var mundo = new World(cave);
+    mundo.start();
 }
