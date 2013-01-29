@@ -18,5 +18,9 @@ The universe of the Game of Life is an infinite two-dimensional orthogonal grid 
 
 ## Running suggestion
 
+* Use 'lifelike.htm'
+
+### Alternative
+
 * Install node.js (http://nodejs.org/)
 * Run with 'node lifelike.js'
